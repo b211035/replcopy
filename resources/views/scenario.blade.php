@@ -89,7 +89,10 @@
                       <button class="conditions_add">＋条件を追加する</button>
                     </div>
                     <div class="speech target">
-                      ボットの発話内容を設定します
+                      ボットの発話内容を設定します<br>
+                      #*; 直前のユーザー発話の*の値に置き換えます<br>
+                      #all; 直前のユーザー発話の内容に置き換えます<br>
+                      @XXX; 変数XXXの値に置き換えます <br>
                       <div class="speechs" data-index="{{ count($Cell->Speeches) }}">
                       @foreach ($Cell->Speeches as $Speech)
                         <div class="box speechs">
@@ -179,9 +182,9 @@
     </div>
     <div class="speech target">
       ボットの発話内容を設定します<br>
-      #*; 
-      #all; 
-      @XXX;  
+      #*; 直前のユーザー発話の*の値に置き換えます<br>
+      #all; 直前のユーザー発話の内容に置き換えます<br>
+      @XXX; 変数XXXの値に置き換えます <br>
       <div class="speechs" data-index="1">
         <div class="box">
           <input type="text" name="[speech][0][text]">
