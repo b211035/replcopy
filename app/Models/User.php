@@ -19,7 +19,7 @@ class User extends Model
         return $this->hasMany('App\Models\Progress');
     }
 
-    public function Storage()
+    public function Storages()
     {
         return $this->hasMany('App\Models\Storage');
     }

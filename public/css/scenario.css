@@ -1,0 +1,136 @@
+#main {
+  display: flex;
+  height: 100vh;
+}
+
+#sideber {
+  flex: 0 0 auto;
+
+  height: 100%;
+  padding: 0px 10px;
+}
+
+#sideber > div {
+  border: 1px solid;
+  padding: 5px;
+}
+
+.cell {
+  width: 150px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid;
+  padding: 5px 0;
+}
+.cell_main {
+  border: 1px solid;
+  padding: 5px;
+  flex-grow: 1;
+}
+
+.pointer {
+  border: 1px solid;
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  position: relative;
+  background: white;
+}
+.s_pointer {
+  left: -0.5em;
+}
+.e_pointer {
+  left: 0.5em;
+}
+
+#contents {
+  flex: 1 1 auto;
+  overflow: scroll;
+
+  height: 100%;
+  padding: 0px 10px;
+}
+
+#active_area {
+  height: 200vh;
+  width: 200vw;
+}
+
+#detail {
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  padding: 0px 10px;
+}
+
+#detail_change {
+  flex: 1 1 auto;
+}
+
+#cells > * ,
+#chains > * {
+  display: none;
+}
+
+#detail_change .open {
+  display: flex;
+  flex-direction: column;
+}
+
+#manage {
+  flex: 0 0 auto;
+}
+
+.allow {
+  position: absolute;
+}
+
+.hidden {
+  display: none;
+}
+
+#proto_types {
+  display: none;
+}
+#input_proto {
+  display: none;
+}
+.input_tabs {
+  display: flex;
+}
+.input_tabs > * {
+  flex: 1 1 auto;
+  cursor: pointer;
+  padding: 5px;
+  border: solid 1px;
+}
+.input_boxs > * {
+  display: none;
+}
+.input_boxs > .target {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border: solid 1px;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border: solid 1px;
+}
+
+.box > * {
+  flex: 1 1 auto;
+}
+
+
+#save {
+  padding: 10px;
+}
+#submit{
+  width: 100%;
+}

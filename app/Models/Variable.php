@@ -14,4 +14,8 @@ class Variable extends Model
         return $this->belongsTo('App\Models\Bot');
     }
 
+    public function Storages()
+    {
+        return $this->hasMany('App\Models\Storage');
+    }
 }
