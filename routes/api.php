@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => 'api'], function() {
-	Route::post('/registration', 'ApiController@registration')->name('registration_api');
-	Route::post('/dialogue', 'ApiController@dialogue')->name('dialogue_api');
+  Route::post('/registration', 'ApiController@registration')->name('registration_api');
+  Route::post('/addgroup', 'ApiController@addgroup')->name('addgroup_api');
+  Route::post('/dialogue', 'ApiController@dialogue')->name('dialogue_api');
 });

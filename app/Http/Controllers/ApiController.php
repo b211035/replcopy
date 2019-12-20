@@ -11,6 +11,7 @@ class ApiController extends Controller
 {
   var $User;
   var $Bot;
+  var $Group;
   var $Scenario;
   var $Progress;
   var $Voice = ['1' => '', '2' => ''];
@@ -23,6 +24,28 @@ class ApiController extends Controller
   public function __construct()
   {
     $this->middleware('guest');
+  }
+
+  public function addgroup(Request $request)
+  {
+    // TODO ヘッダ管理
+    $result = [];
+    $botId = $request->input('botId');
+
+    $Bot = Models\Bot::where('key', $botId)->first();
+    if ($Bot) {
+      $groupid = bin2hex(random_bytes(10));
+
+      $Group = Models\Group::create([
+        'bot_id' => $Bot->id,
+        'key' => $groupid
+      ]);
+      $result['groupId'] = $groupid;
+    } else {
+      // TODO エラー
+    }
+
+    return response()->json($result);
   }
 
   public function registration(Request $request)
@@ -49,6 +72,24 @@ class ApiController extends Controller
     return response()->json($result);
   }
 
+  public function gropuing(Request $request)
+  {
+    // TODO ヘッダ管理
+    $result = [];
+    $groupId = $request->input('groupId');
+    $appUserId = $request->input('appUserId');
+
+    $Group = Models\Group::where('key', $groupId)->first();
+    $User = Models\User::where('key', $appUserId)->first();
+    if ($Group && $User) {
+      $Group->Users()->save($User);  
+      $result['state'] = 'succsess';
+    } else {
+      // TODO エラー
+    }
+
+    return response()->json($result);
+  }
   public function dialogue(Request $request)
   {
     $result = [];
@@ -56,16 +97,24 @@ class ApiController extends Controller
 
     $appUserId = $request->input('appUserId');
     $botId     = $request->input('botId');
+    $groupId = $request->input('groupId');
     $voiceText = $request->input('voiceText');
     $initTalkingFlag = $request->input('initTalkingFlag');
     $initTopicId = $request->input('initTopicId');
     // $appRecvTime = $request->input('appRecvTime');
     // $appSendTime = $request->input('appSendTime');
 
+
     $this->User = Models\User::where('key', $appUserId)->first();
     $this->Bot = Models\Bot::where('key', $botId)->first();
+    $this->Group = Models\Group::where('key', $groupId)->first();
+
     $Scenario = Models\Scenario::where('key', $initTopicId)->first();
-    $Progress = $this->User->Progress->where('scenario_id', $Scenario->id)->first();
+    $Progress = $this->Group->Progress->where('scenario_id', $Scenario->id)->first();
+
+    if (!$this->Group->Users()->where('users.id', $this->User->id)->exists()) {
+      $this->Group->Users()->save($this->User);  
+    }
 
     // 初期化の状態ならシナリオのスタートを検証
     if ($initTalkingFlag) {
@@ -81,6 +130,7 @@ class ApiController extends Controller
       }
       $Progress = new Models\Progress;
       $Progress->user_id = $this->User->id;
+      $Progress->group_id = $this->Group->id;
       $Progress->scenario_id = $Scenario->id;
 
       if (empty($voiceText) || $voiceText == 'init') {
@@ -130,6 +180,10 @@ class ApiController extends Controller
     // 次のセルがなかったらNO MATCH
     $date = new \DateTime();
     $result = [
+      'voiceText' => [
+        'appUserId'=> $this->User->key,
+        'text'=> $voiceText
+      ],
       'systemText' => [
         'expression'=> $expression,
         'utterance'=> $expression

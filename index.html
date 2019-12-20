@@ -4,14 +4,25 @@
   <title></title>
 </head>
 <body>
+<h1>ユーザー登録</h1>
 <form action="http://replcopy.azurewebsites.net/api/registration" method="post">
   ボットID:
   <input type="text" name="botId">
   <button type="submit">submit</button>
 </form>
+<h1>グループ登録</h1>
+<form action="http://replcopy.azurewebsites.net/api/addgroup" method="post">
+  ボットID:
+  <input type="text" name="botId">
+  <button type="submit">submit</button>
+</form>
+<h1>会話</h1>
 <form action="http://replcopy.azurewebsites.net/api/dialogue" method="post">
   ユーザーID:
   <input type="text" name="appUserId" value="87512525-d2ee-8b85-a178-689405af6c5f">
+  <br>
+  グループID:
+  <input type="text" name="groupId" value="f711e345a2a9fc3942d7">
   <br>
   ボットID:
   <input type="text" name="botId" value="b2f3ba18fa0917d66cd0">
