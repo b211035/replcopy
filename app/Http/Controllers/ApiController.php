@@ -82,7 +82,7 @@ class ApiController extends Controller
     $Group = Models\Group::where('key', $groupId)->first();
     $User = Models\User::where('key', $appUserId)->first();
     if ($Group && $User) {
-      $Group->Users()->save($User);  
+      $Group->Users()->save($User);
       $result['state'] = 'succsess';
     } else {
       // TODO エラー
@@ -110,7 +110,7 @@ class ApiController extends Controller
     $this->Group = Models\Group::where('key', $groupId)->first();
     $Progress = $this->Group->Progress->first();
     if (!$this->Group->Users()->where('users.id', $this->User->id)->exists()) {
-      $this->Group->Users()->save($this->User);  
+      $this->Group->Users()->save($this->User);
     }
 
     // 初期化の状態ならシナリオのスタートを検証
@@ -153,7 +153,7 @@ class ApiController extends Controller
           'expression'=> 'NO MATCH',
           'utterance'=> 'NO MATCH'
         ],
-        'serverSendTime' => $date->format('Y-m-d H:i:a')
+        'serverSendTime' => $date->format('Y-m-d H:i:s')
       ];
       return response()->json($result);
     }
