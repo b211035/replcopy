@@ -186,7 +186,7 @@ class ApiController extends Controller
         'expression'=> $expression,
         'utterance'=> $expression
       ],
-      'serverSendTime' => $date->format('Y-m-d H:i:a')
+      'serverSendTime' => $date->format('Y-m-d H:i:s')
     ];
     return response()->json($result);
   }
