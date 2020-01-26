@@ -108,16 +108,14 @@ class ApiController extends Controller
     $this->User = Models\User::where('key', $appUserId)->first();
     $this->Bot = Models\Bot::where('key', $botId)->first();
     $this->Group = Models\Group::where('key', $groupId)->first();
-
-    $Scenario = Models\Scenario::where('key', $initTopicId)->first();
-    $Progress = $this->Group->Progress->where('scenario_id', $Scenario->id)->first();
-
+    $Progress = $this->Group->Progress->first();
     if (!$this->Group->Users()->where('users.id', $this->User->id)->exists()) {
       $this->Group->Users()->save($this->User);  
     }
 
     // 初期化の状態ならシナリオのスタートを検証
     if ($initTalkingFlag) {
+      $Scenario = Models\Scenario::where('key', $initTopicId)->first();
       if (!$Scenario) {
         // シナリオがないならエラーにする
         // TODO error
@@ -222,6 +220,15 @@ class ApiController extends Controller
             }
           }
           break;
+        case 4:
+          // 次のセルがシナリオ遷移
+          foreach ($NextCell->Speeches as $Speech) {
+            $subScenario = Models\Scenario::where('id', $Speech->condition)->first();
+            // 取得文言なしならシステム起点の次を評価
+            $subNextCells = $subScenario->SystemStarts->first()->NextCells;
+            return $this->NextCell($subNextCells, $voiceText);
+          }
+          break;
       }
     }
     if ($return) {
@@ -268,19 +275,24 @@ class ApiController extends Controller
   }
 
   private function matchText($Speech, $voice){
+    $this->Voice['1'] = $voice;
     $this->Voice['2'] = $voice;
-    if (strrpos($Speech->text, '*') === false) {
-      // アスタリスクなしなら厳密チェック
-      return ($Speech->text == $voice);
-    } else {
-      // アスタリスクはワイルドカード
-      $pattern = '/'. str_replace('*', '(.+)', $Speech->text) .'/';
-      $result = preg_match($pattern, $voice, $m);
-      if ($result !== false) {
-        $this->Voice['1'] = $m['1'];
+
+    $reg_speach = '/'. str_replace('*', '(?<ast>.+)', $Speech->text) .'/';
+    $pattern = '/!(.+);/U';
+    $result = preg_match_all($pattern, $reg_speach, $matches);
+    foreach ($matches[0] as $key => $matche) {
+      $Dictionary = $this->Bot->Dictionaries->where('id', $matches[1][$key])->first();
+      if ($Dictionary) {
+        $reg_speach = str_replace($matche, $Dictionary->reg(), $reg_speach);
       }
-      return $result;
     }
+
+    $result = preg_match($reg_speach, $voice, $m);
+    if ($result !== false && isset($m['ast'])) {
+      $this->Voice['1'] = $m['ast'];
+    }
+    return $result;
   }
 
   private function setVariable($Cell, $voiceText){

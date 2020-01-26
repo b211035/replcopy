@@ -19,4 +19,23 @@ class Dictionary extends Model
         return $this->hasMany('App\Models\Word');
     }
 
+    public function word_texts()
+    {
+        $Words = $this->Words;
+        $word_texts = [];
+        foreach ($Words as $Word) {
+            $word_texts[] = $Word->name;
+        }
+        return join("\n", $word_texts);
+    }
+
+    public function reg()
+    {
+        $Words = $this->Words;
+        $word_texts = [];
+        foreach ($Words as $Word) {
+            $word_texts[] = $Word->name;
+        }
+        return '('.join("|", $word_texts).')';
+    }
 }

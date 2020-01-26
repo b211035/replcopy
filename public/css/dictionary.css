@@ -1,0 +1,73 @@
+#main {
+  display: flex;
+  height: 100vh;
+}
+
+#sideber {
+  flex: 0 0 auto;
+
+  height: 100%;
+  width: 20%;
+  border-right: 1px solid;
+  padding: 20px 10px;
+}
+
+#contents {
+  flex: 1 1 auto;
+
+  height: 100%;
+  padding: 20px 10px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 0px;
+}
+
+.manage {
+  display: flex;
+
+  padding: 10px 0px;
+}
+
+.manage > div {
+  border: 1px solid;
+  padding: 10px;
+}
+
+.dictionary {
+  display: table;
+  width: 100%;  
+  padding: 10px 0px;
+}
+.row {
+  display: table-row;
+}
+.col {
+  display: table-cell;
+}
+
+#bots {
+  display: flex; 
+}
+
+#bots > * {
+  border: 1px solid;
+  padding: 10px;
+}
+
+#add_dictionary {
+  border: 1px solid;
+  padding: 10px;
+}
+
+form > * {
+  display: block;
+}
+
+textarea {
+  width: 200px;
+  height: 200px;
+}

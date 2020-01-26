@@ -23,6 +23,8 @@ $('#talk').click(function(e){
 
     bot_id = $('#botId').val();
     user_id = $('#appUserId').val();
+    group_id = $('#groupId').val();
+    ini_flg = $('#initTalkingFlag').prop('checked');;
 
     if (user_id == '') {
         // id取得
@@ -38,13 +40,23 @@ $('#talk').click(function(e){
             $('#appUserId').val(user_id);
         });
     }
+    if (group_id == '') {
+        // id取得
+        url = $('#groupform').attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { botId: bot_id },
+            async: false
+        }).done(function(res) {
+            group_id = res.groupId;
+            $('#groupId').val(group_id);
+        });
+    }
+
 
     var text = $('#voiceText').val();
-    if (text == 'init') {
-        ini_flg = true;
-    } else {
-        ini_flg = '';
-    }
     $('#talkerea').append('<div>'+text+'</div>');
 
     url = $('#talkform').attr('action');
@@ -53,8 +65,9 @@ $('#talk').click(function(e){
         type: "POST",
         url: url,
         data: {
-            appUserId: user_id,
             botId: bot_id,
+            appUserId: user_id,
+            groupId: group_id,
             voiceText: text,
             initTalkingFlag: ini_flg,
             initTopicId: topic_id

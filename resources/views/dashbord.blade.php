@@ -15,7 +15,7 @@
       <ul>
         <li>プロジェクト一覧</li>
           @foreach ($Projects as $Project)
-            <p>{{ $Project->name }}</p>
+            <a href="{{ route('dashbord') }}">{{ $Project->name }}</a>
           @endforeach
         <li>マイページ</li>
         <li>使い方</li>
@@ -45,8 +45,12 @@
           </div>
 
           <div class="manage">
-            <div>コンソール</div>
-            <div>辞書</div>
+            <div>
+              <a href="{{ route('talktest') }}">コンソール</a>
+            </div>
+            <div>
+              <a href="{{ route('dictionary') }}">辞書</a>
+            </div>
             <div>変数</div>
           </div>
           <div class="seanario">
@@ -61,7 +65,7 @@
             @foreach ($Bot->Scenarios as $Scenario)
               <div class="row contents">
                 <div class="col name">
-                  <a href="{{ route('scenario', $Scenario->id) }}">{{ $Scenario->name }}</a>({{ $Scenario->key }})
+                  <a href="{{ route('edit_scenario', $Scenario->id) }}">{{ $Scenario->name }}</a>({{ $Scenario->key }})
                 </div>
                 <div class="col type">タイプ</div>
                 <div class="col status">ステータス</div>

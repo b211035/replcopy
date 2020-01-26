@@ -41,20 +41,23 @@ $(function () {
       g.setAttribute('data-index', cell_index);
       g.setAttribute('data-type', data_type);
 
+      // 左ポインタ
       var s_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       s_circle.setAttribute('cx', left);
       s_circle.setAttribute('cy', top + 25);
-      s_circle.setAttribute('r', 20);
+      s_circle.setAttribute('r', 10);
       s_circle.setAttribute('class', 's_pointer');
       s_circle.setAttribute('fill', 'green');
 
+      // 右ポインタ
       var e_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       e_circle.setAttribute('cx', left + 150);
       e_circle.setAttribute('cy', top + 25);
-      e_circle.setAttribute('r', 20);
+      e_circle.setAttribute('r', 10);
       e_circle.setAttribute('class', 'e_pointer');
       e_circle.setAttribute('fill', 'green');
 
+      // 閉じる
       var del_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       del_circle.setAttribute('cx', left + 150);
       del_circle.setAttribute('cy', top);
@@ -77,18 +80,40 @@ $(function () {
       del_closs2.setAttribute('y2', top - 5);
       del_closs2.setAttribute('stroke', 'black');
       del_closs2.setAttribute('stroke-width', 1);
+      // 閉じる
 
       var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute('x', left);
       rect.setAttribute('y', top);
       rect.setAttribute('width', 150);
       rect.setAttribute('height', 50);
+
       if (data_type == 'u_s' || data_type == 'u_t') {
         rect.setAttribute('fill', 'blue');
       } else if (data_type == 's_s' || data_type == 's_t') {
         rect.setAttribute('fill', 'red');
       } else {
         rect.setAttribute('fill', 'gray');
+      }
+
+      // テキスト表示（７文字程度
+      var text_area = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      text_area.setAttribute('x', left + 5);
+      text_area.setAttribute('y', top + 5);
+      text_area.setAttribute('width', 140);
+      text_area.setAttribute('height', 40);
+      text_area.setAttribute('fill', 'white');
+
+      var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute('x', left + 5 + 5);
+      text.setAttribute('y', top + 5 + 40 - 13);
+      text.setAttribute('font-size', 18);
+      text.setAttribute('class', 'cell_text');
+      if (data_type == 'u_s') {
+        text.append('ユーザー起点');
+      }
+      if (data_type == 's_s') {
+        text.append('システム起点');
       }
 
       var system;
@@ -113,6 +138,8 @@ $(function () {
       addForm(cell_index, system);
 
       g.append(rect);
+      g.append(text_area);
+      g.append(text);
       if (data_type != 'u_s' && data_type != 's_s') {
         g.append(s_circle);
       }
@@ -161,19 +188,24 @@ $(function () {
     $(this).parent().remove();
     $("#cells > div[data-index='"+index+"']").remove();
 
-    $("line[data-prev-index='"+index+"']").each(function(index) {
+    $("g[data-prev-index='"+index+"']").each(function(index) {
       line_index = $(this).attr('chain-index');
       $(this).remove();
       $("#chains > div[index='"+line_index+"']").remove();
     });
 
-    $("line[data-next-index='"+index+"']").each(function(index) {
+    $("g[data-next-index='"+index+"']").each(function(index) {
       line_index = $(this).attr('chain-index');
       $(this).remove();
       $("#chains > div[index='"+line_index+"']").remove();
     });
   });
-// detail
+  $("#contents").on("click", ".del_circle", function () {
+    var index = $(this).parent().attr('chain-index');
+    $(this).parent().remove();
+    $("#chains > div[data-index='"+index+"']").remove();
+  });
+  // detail
   // タブ選択
   $("#detail").on("click", ".input_tabs > .condition", function(){
     $(this).parent().parent().find(".input_boxs > *").removeClass('target');
@@ -249,6 +281,23 @@ $(function () {
     $(this).parent().find(".memories").attr('data-index', item_index);
   });
 
+  $("#detail").on("change", "input[name*='[0][text]']", function(event){
+    var box = $(this).parent().parent().parent().parent().parent();
+    var index = box.attr('data-index');
+    var text = $(this).val().slice(0, 7);
+    $('.cell[data-index="'+index+'"]').find(".cell_text").html(text);
+  });
+  $("#detail").on("change", ".move_scenario", function(event){
+    var box = $(this).parent().parent().parent();
+    var index = box.attr('data-index');
+    var text = $(this).find("[value='"+$(this).val()+"']")
+    if (text.length == 0) {
+      text = '';
+    } else {
+      text = text.attr('data-name').slice(0, 7);
+    }
+    $('.cell[data-index="'+index+'"]').find(".cell_text").html(text);
+  });
   $("#detail").on("change", ".condition_type", function(event){
     $(this).parent().parent().find(".condition_type_val").val($(this).val());
     $(this).parent().parent().find(".condition_value").val('');
@@ -272,6 +321,8 @@ function cellDrag() {
     drag: function(event, ui) {
       var top = moveY + ui.position.top;
       var left = moveX + ui.position.left;
+      var x;
+      var y;
 
       var target = ui.helper.first();
       target.attr('transform', 'translate('+left+', '+top+')');
@@ -279,16 +330,56 @@ function cellDrag() {
       target.attr('y', top);
 
       $('[data-prev-index="'+target.attr('data-index')+'"]').each(function(index) {
-        var x = parseInt($(this).attr('spot-x1')) + ui.position.left;
-        var y = parseInt($(this).attr('spot-y1')) + ui.position.top;
-        $(this).attr('x1', x);
-        $(this).attr('y1', y);
+        var arrow = $(this).find('.arrow');
+        x = parseInt(arrow.attr('spot-x1')) + ui.position.left;
+        y = parseInt(arrow.attr('spot-y1')) + ui.position.top;
+        arrow.attr('x1', x);
+        arrow.attr('y1', y);
+
+        var herfX = (parseInt(arrow.attr('x1')) + parseInt(arrow.attr('x2'))) / 2;
+        var herfY = (parseInt(arrow.attr('y1')) + parseInt(arrow.attr('y2'))) / 2;
+
+        var del_circle = $(this).find('.del_circle');
+        del_circle.attr('cx', herfX);
+        del_circle.attr('cy', herfY);
+
+        var del_line1 = $(this).find('.del_line1');
+        del_line1.attrz('x1', herfX - 5);
+        del_line1.attrz('y1', herfY - 5);
+        del_line1.attrz('x2', herfX + 5);
+        del_line1.attrz('y2', herfY + 5);
+
+        var del_line2 = $(this).find('.del_line2');
+        del_line2.attrz('x1', herfX - 5);
+        del_line2.attrz('y1', herfY + 5);
+        del_line2.attrz('x2', herfX + 5);
+        del_line2.attrz('y2', herfY - 5);
       });
       $('[data-next-index="'+target.attr('data-index')+'"]').each(function(index) {
-        var x = parseInt($(this).attr('spot-x2')) + ui.position.left;
-        var y = parseInt($(this).attr('spot-y2')) + ui.position.top;
-        $(this).attr('x2', x);
-        $(this).attr('y2', y);
+        var arrow = $(this).find('.arrow');
+        x = parseInt(arrow.attr('spot-x2')) + ui.position.left;
+        y = parseInt(arrow.attr('spot-y2')) + ui.position.top;
+        arrow.attr('x2', x);
+        arrow.attr('y2', y);
+
+        var herfX = (parseInt(arrow.attr('x1')) + parseInt(arrow.attr('x2'))) / 2;
+        var herfY = (parseInt(arrow.attr('y1')) + parseInt(arrow.attr('y2'))) / 2;
+
+        var del_circle = $(this).find('.del_circle');
+        del_circle.attr('cx', herfX);
+        del_circle.attr('cy', herfY);
+
+        var del_line1 = $(this).find('.del_line1');
+        del_line1.attrz('x1', herfX - 5);
+        del_line1.attrz('y1', herfY - 5);
+        del_line1.attrz('x2', herfX + 5);
+        del_line1.attrz('y2', herfY + 5);
+
+        var del_line2 = $(this).find('.del_line2');
+        del_line2.attrz('x1', herfX - 5);
+        del_line2.attrz('y1', herfY + 5);
+        del_line2.attrz('x2', herfX + 5);
+        del_line2.attrz('y2', herfY - 5);
       });
 
       ui.position.top = 0;
@@ -297,16 +388,18 @@ function cellDrag() {
     stop: function(event, ui) {
       var target = ui.helper.first();
       $('[data-prev-index="'+target.attr('data-index')+'"]').each(function(index) {
-        var x = parseInt($(this).attr('x1'));
-        var y = parseInt($(this).attr('y1'));
-        $(this).attr('spot-x1', x);
-        $(this).attr('spot-y1', y);
+        var arrow = $(this).find('.arrow');
+        var x = parseInt(arrow.attr('x1'));
+        var y = parseInt(arrow.attr('y1'));
+        arrow.attr('spot-x1', x);
+        arrow.attr('spot-y1', y);
       });
       $('[data-next-index="'+target.attr('data-index')+'"]').each(function(index) {
-        var x = parseInt($(this).attr('x2'));
-        var y = parseInt($(this).attr('y2'));
-        $(this).attr('spot-x2', x);
-        $(this).attr('spot-y2', y);
+        var arrow = $(this).find('.arrow');
+        var x = parseInt(arrow.attr('x2'));
+        var y = parseInt(arrow.attr('y2'));
+        arrow.attr('spot-x2', x);
+        arrow.attr('spot-y2', y);
       });
     }
   });
@@ -348,12 +441,16 @@ function cellDrag() {
         e_cell = target.parent().attr('data-index');
 
         if ( $("line[data-prev-index='"+s_cell+"'][data-next-index='"+e_cell+"']").length == 0 ) {
-
           var offsetX = target.parent().attr('x') ? parseInt(target.parent().attr('x')) : 0;
           var offsetY = target.parent().attr('y') ? parseInt(target.parent().attr('y')) : 0;
 
           endX = parseInt(target.attr('cx')) + offsetX;
           endY = parseInt(target.attr('cy')) + offsetY;
+
+          var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.setAttribute('chain-index', chain_index);
+          g.setAttribute('data-prev-index', s_cell);
+          g.setAttribute('data-next-index', e_cell);
 
           var arrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
           arrow.setAttribute('x1', startX);
@@ -368,18 +465,48 @@ function cellDrag() {
 
           arrow.setAttribute('stroke', 'black');
           arrow.setAttribute('stroke-width', 1);
-          // $(event.target).parent().append(arrow);
-          arrow.setAttribute('chain-index', chain_index);
-          arrow.setAttribute('data-prev-index', s_cell);
-          arrow.setAttribute('data-next-index', e_cell);
-          $('#active_area').append(arrow);
+          arrow.setAttribute('class', 'arrow');
+
+          var herfX = (startX + endX) / 2;
+          var herfY = (startY + endY) / 2;
+
+          // 閉じる
+          var del_circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          del_circle.setAttribute('cx', herfX);
+          del_circle.setAttribute('cy', herfY);
+          del_circle.setAttribute('r', 10);
+          del_circle.setAttribute('fill', 'gray');
+          del_circle.setAttribute('class', 'del_circle');
+
+          var del_closs1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          del_closs1.setAttribute('x1', herfX - 5);
+          del_closs1.setAttribute('y1', herfY - 5);
+          del_closs1.setAttribute('x2', herfX + 5);
+          del_closs1.setAttribute('y2', herfY + 5);
+          del_closs1.setAttribute('stroke', 'black');
+          del_closs1.setAttribute('stroke-width', 1);
+          del_closs1.setAttribute('class', 'del_line1');
+
+          var del_closs2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          del_closs2.setAttribute('x1', herfX - 5);
+          del_closs2.setAttribute('y1', herfY + 5);
+          del_closs2.setAttribute('x2', herfX + 5);
+          del_closs2.setAttribute('y2', herfY - 5);
+          del_closs2.setAttribute('stroke', 'black');
+          del_closs2.setAttribute('stroke-width', 1);
+          del_closs2.setAttribute('class', 'del_line2');
+
+          g.append(arrow);
+          g.append(del_circle);
+          g.append(del_closs1);
+          g.append(del_closs2);
+          $('#active_area').append(g);
 
           addChain(chain_index, s_cell, e_cell);
 
           chain_index++;
         }
       }
-
 
       startX = 0;
       startY = 0;
@@ -402,7 +529,13 @@ function addForm(index, data_type) {
   // var index = $("#cells").attr('data-index');
   // index = parseInt(index);
 
-  var box = $("#proto_types").clone();
+  if (data_type == 4) {
+    var box = $("#move_proto").clone();
+    box.find(".move_scenario").attr("name", 'cells['+index+']' + box.find(".move_scenario").attr("name"));
+  } else {
+    var box = $("#proto_types").clone();
+  }
+  // move_proto
   box.attr("id", '');
   box.attr('data-index', index);
 
@@ -417,7 +550,6 @@ function addForm(index, data_type) {
       $(this).val(index);
     }
   });
-
   $("#cells").attr('data-index', index + 1);
   $('#cells').append(box);
 }

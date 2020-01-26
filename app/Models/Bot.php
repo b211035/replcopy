@@ -22,7 +22,7 @@ class Bot extends Model
     {
         return $this->hasMany('App\Models\Scenario');
     }
-    public function Dictionarys()
+    public function Dictionaries()
     {
         return $this->hasMany('App\Models\Dictionary');
     }

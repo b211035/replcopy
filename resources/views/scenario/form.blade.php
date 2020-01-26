@@ -15,7 +15,7 @@
     <div id="sideber">
       <div data-type="u_t">ユーザー発話</div>
       <div data-type="s_t">システム発話</div>
-      <!-- <div data-type="s_m">シナリオ遷移</div> -->
+      <div data-type="s_m">シナリオ遷移</div>
       <div data-type="u_s">ユーザー起点</div>
       <div data-type="s_s">システム起点</div>
     </div>
@@ -93,6 +93,7 @@
                       #*; 直前のユーザー発話の*の値に置き換えます<br>
                       #all; 直前のユーザー発話の内容に置き換えます<br>
                       @XXX; 変数XXXの値に置き換えます <br>
+                      !XXX; IDXXXの辞書とマッチさせます <br>
                       <div class="speechs" data-index="{{ count($Cell->Speeches) }}">
                       @foreach ($Cell->Speeches as $Speech)
                         <div class="box speechs">
@@ -138,10 +139,10 @@
               </div>
               <div id="chains" data-index="{{ array_key_last($CellChains) +1 }}">
               @foreach ($CellChains as $CellChain)
-                <div index="{{ $CellChain->svg_index }}">
+                <div data-index="{{ $CellChain->svg_index }}">
                   <input type="hidden" name="chains[{{ $CellChain->svg_index }}][svg_index]" value="{{ $CellChain->prevCell->svg_index }}">
-                  <input type="text" name="chains[{{ $CellChain->svg_index }}][prev]" value="{{ $CellChain->prevCell->svg_index }}">
-                  <input type="text" name="chains[{{ $CellChain->svg_index }}][next]" value="{{ $CellChain->nextCell->svg_index }}">
+                  <input type="hidden" name="chains[{{ $CellChain->svg_index }}][prev]" value="{{ $CellChain->prevCell->svg_index }}">
+                  <input type="hidden" name="chains[{{ $CellChain->svg_index }}][next]" value="{{ $CellChain->nextCell->svg_index }}">
                 </div>
               @endforeach
               </div>
@@ -164,6 +165,11 @@
     </div>
   </div>
 
+<div id="chain_proto" data-index="">
+  <input type="hidden" name="[svg_index]">
+  <input type="hidden" name="[prev]">
+  <input type="hidden" name="[next]">
+</div>
 
 <div id="proto_types" data-index="">
   <input type="hidden" name="[system]">
@@ -185,6 +191,7 @@
       #*; 直前のユーザー発話の*の値に置き換えます<br>
       #all; 直前のユーザー発話の内容に置き換えます<br>
       @XXX; 変数XXXの値に置き換えます <br>
+      !XXX; IDXXXの辞書とマッチさせます <br>
       <div class="speechs" data-index="1">
         <div class="box">
           <input type="text" name="[speech][0][text]">
@@ -206,11 +213,6 @@
   </div>
 </div>
 
-<div id="chain_proto" data-index="">
-  <input type="hidden" name="[svg_index]">
-  <input type="hidden" name="[prev]">
-  <input type="hidden" name="[next]">
-</div>
 
 <div id="input_proto">
   <div class="box conditions">
@@ -256,4 +258,21 @@
     <span><input type="radio" class="condition_type" name="[memory][_index][c]" value="4">覚えている内容を忘れさせる</span>
   </div>
 </div>
+
+<div id="move_proto">
+  <input type="hidden" name="[system]">
+  <input type="hidden" name="[svg_index]">
+  <div class="">
+    <div class="">
+      <input type="hidden" name="[speech][_index][text]" value="move">
+      <select class="move_scenario" name="[speech][_index][condition]">
+        <option>-----------------</option>
+        @foreach ($AScenarios as $AScenario)
+          <option value="{{ $AScenario->id }}" data-name="{{ $AScenario->name }}">{{ $AScenario->name }}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+</div>
+
 @endsection
