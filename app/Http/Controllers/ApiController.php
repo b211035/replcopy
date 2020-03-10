@@ -114,6 +114,10 @@ class ApiController extends Controller
     }
 
     // 初期化の状態ならシナリオのスタートを検証
+    if ($initTalkingFlag && $initTalkingFlag == 'false') {
+        $initTalkingFlag = false;
+    }
+
     if ($initTalkingFlag) {
       $Scenario = Models\Scenario::where('key', $initTopicId)->first();
       if (!$Scenario) {

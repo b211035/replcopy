@@ -205,6 +205,16 @@ $(function () {
     $(this).parent().remove();
     $("#chains > div[data-index='"+index+"']").remove();
   });
+  $("#contents").on("click", ".del_line1", function () {
+    var index = $(this).parent().attr('chain-index');
+    $(this).parent().remove();
+    $("#chains > div[data-index='"+index+"']").remove();
+  });
+  $("#contents").on("click", ".del_line2", function () {
+    var index = $(this).parent().attr('chain-index');
+    $(this).parent().remove();
+    $("#chains > div[data-index='"+index+"']").remove();
+  });
   // detail
   // タブ選択
   $("#detail").on("click", ".input_tabs > .condition", function(){
@@ -319,8 +329,10 @@ function cellDrag() {
       moveY = target.attr('y') ? parseInt(target.attr('y')) : 0;
     },
     drag: function(event, ui) {
-      var top = moveY + ui.position.top;
-      var left = moveX + ui.position.left;
+      var dragY = (ui.position.top - ui.originalPosition.top);
+      var dragX = (ui.position.left -  ui.originalPosition.left);
+      var top = moveY + dragY;
+      var left = moveX + dragX;
       var x;
       var y;
 
@@ -331,8 +343,8 @@ function cellDrag() {
 
       $('[data-prev-index="'+target.attr('data-index')+'"]').each(function(index) {
         var arrow = $(this).find('.arrow');
-        x = parseInt(arrow.attr('spot-x1')) + ui.position.left;
-        y = parseInt(arrow.attr('spot-y1')) + ui.position.top;
+        x = parseInt(arrow.attr('spot-x1')) + dragX;
+        y = parseInt(arrow.attr('spot-y1')) + dragY;
         arrow.attr('x1', x);
         arrow.attr('y1', y);
 
@@ -344,21 +356,21 @@ function cellDrag() {
         del_circle.attr('cy', herfY);
 
         var del_line1 = $(this).find('.del_line1');
-        del_line1.attrz('x1', herfX - 5);
-        del_line1.attrz('y1', herfY - 5);
-        del_line1.attrz('x2', herfX + 5);
-        del_line1.attrz('y2', herfY + 5);
+        del_line1.attr('x1', herfX - 5);
+        del_line1.attr('y1', herfY - 5);
+        del_line1.attr('x2', herfX + 5);
+        del_line1.attr('y2', herfY + 5);
 
         var del_line2 = $(this).find('.del_line2');
-        del_line2.attrz('x1', herfX - 5);
-        del_line2.attrz('y1', herfY + 5);
-        del_line2.attrz('x2', herfX + 5);
-        del_line2.attrz('y2', herfY - 5);
+        del_line2.attr('x1', herfX - 5);
+        del_line2.attr('y1', herfY + 5);
+        del_line2.attr('x2', herfX + 5);
+        del_line2.attr('y2', herfY - 5);
       });
       $('[data-next-index="'+target.attr('data-index')+'"]').each(function(index) {
         var arrow = $(this).find('.arrow');
-        x = parseInt(arrow.attr('spot-x2')) + ui.position.left;
-        y = parseInt(arrow.attr('spot-y2')) + ui.position.top;
+        x = parseInt(arrow.attr('spot-x2')) + dragX;
+        y = parseInt(arrow.attr('spot-y2')) + dragY;
         arrow.attr('x2', x);
         arrow.attr('y2', y);
 
@@ -370,16 +382,16 @@ function cellDrag() {
         del_circle.attr('cy', herfY);
 
         var del_line1 = $(this).find('.del_line1');
-        del_line1.attrz('x1', herfX - 5);
-        del_line1.attrz('y1', herfY - 5);
-        del_line1.attrz('x2', herfX + 5);
-        del_line1.attrz('y2', herfY + 5);
+        del_line1.attr('x1', herfX - 5);
+        del_line1.attr('y1', herfY - 5);
+        del_line1.attr('x2', herfX + 5);
+        del_line1.attr('y2', herfY + 5);
 
         var del_line2 = $(this).find('.del_line2');
-        del_line2.attrz('x1', herfX - 5);
-        del_line2.attrz('y1', herfY + 5);
-        del_line2.attrz('x2', herfX + 5);
-        del_line2.attrz('y2', herfY - 5);
+        del_line2.attr('x1', herfX - 5);
+        del_line2.attr('y1', herfY + 5);
+        del_line2.attr('x2', herfX + 5);
+        del_line2.attr('y2', herfY - 5);
       });
 
       ui.position.top = 0;
